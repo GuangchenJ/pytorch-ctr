@@ -1,0 +1,53 @@
+version: '3.2'
+
+services:
+  pytorch-ctr:
+    container_name: pytorch-ctr
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: guangchenj/pytorch-ctr:latest
+    privileged: true
+    tty: true
+    stdin_open: true
+
+    command:
+      - sh
+      - -c
+      - |
+          # change password
+          passwd << EOD
+          ${pwd}
+          ${pwd}
+          EOD
+          # copy the config file
+          cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
+          # Password is required for SSH connection
+          sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
+          # Start the ssh service
+          service ssh start
+    restart: always
+#    共享内存大小，自己考虑加不加
+#    shm_size: '8gb'
+    volumes:
+      - "/data/pytorch-workspace:/workspace"
+    ports:
+      - "8722:22"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+#              count 与 device_ids 二选一
+#              device_ids: ["0", "1"]
+              capabilities: [ gpu ]
+
+    networks:
+      net:
+        aliases:
+          - pytorch-ctr
+
+networks:
+  net:
+    driver: bridge
