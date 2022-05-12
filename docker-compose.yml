@@ -26,6 +26,8 @@ services:
           sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
           # Start the ssh service
           service ssh start
+          # keep container running
+          tail -f /dev/null
     restart: always
 #    共享内存大小，自己考虑加不加
 #    shm_size: '8gb'

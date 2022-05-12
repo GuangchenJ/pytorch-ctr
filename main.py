@@ -1,16 +1,13 @@
-# This is a sample Python script.
+import torch
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+flag = torch.cuda.is_available()
+if flag:
+    print("CUDA is available!")
+else:
+    print("CUDA is unavailable!")
 
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+ngpu = 1
+# Decide which device we want to run on
+device = torch.device("cuda:0" if (torch.cuda.is_available() and ngpu > 0) else "cpu")
+print("Device: ", device)
+print("GPU Info: ", torch.cuda.get_device_name(0))
